@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "431264442540",
+    "firebase_url": "https://quizapplication-de785-default-rtdb.firebaseio.com",
+    "project_id": "quizapplication-de785",
+    "storage_bucket": "quizapplication-de785.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431264442540:android:1fff57899158bdc2ced709",
+        "android_client_info": {
+          "package_name": "com.example.quizapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqppNQJmj5QtAcTXLHdEKnNi8Q5iAG0Cg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
