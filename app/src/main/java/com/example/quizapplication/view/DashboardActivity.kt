@@ -1,4 +1,4 @@
-package com.example.quizapplication
+package com.example.quizapplication.view
 
 import android.app.Activity
 import android.os.Bundle
@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.quizapplication.R
 import com.example.quizapplication.ui.theme.LightBg
 import com.example.quizapplication.ui.theme.NavyBlue
 import com.example.quizapplication.ui.theme.ProfessionalBlue

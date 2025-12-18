@@ -1,4 +1,4 @@
-package com.example.quizapplication
+package com.example.quizapplication.view
 
 import android.app.Activity
 import android.app.DatePickerDialog
@@ -32,6 +32,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.quizapplication.R
 import com.example.quizapplication.model.UserModel
 import com.example.quizapplication.repository.UserRepoImpl
 import com.example.quizapplication.ui.theme.LightBg

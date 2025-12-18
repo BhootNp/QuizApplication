@@ -1,4 +1,4 @@
-package com.example.quizapplication
+package com.example.quizapplication.view
 
 import android.app.Activity
 import android.os.Bundle
@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.quizapplication.R
 import com.example.quizapplication.repository.UserRepoImpl
 import com.example.quizapplication.ui.theme.LightBg
 import com.example.quizapplication.ui.theme.NavyBlue

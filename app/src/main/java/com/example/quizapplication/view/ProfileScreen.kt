@@ -1,4 +1,4 @@
-package com.example.quizapplication
+package com.example.quizapplication.view
 
 import androidx.compose.runtime.Composable
 
