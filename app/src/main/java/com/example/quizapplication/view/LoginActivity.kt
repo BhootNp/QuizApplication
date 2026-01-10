@@ -130,13 +130,13 @@ fun LoginBody() {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     SocialMediaCard(
                         modifier = Modifier.weight(1f),
-                        image = R.drawable.facebook, // Replace with your google icon
+                        image = R.drawable.gmail, // Replace with your google icon
                         label = "Google"
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     SocialMediaCard(
                         modifier = Modifier.weight(1f),
-                        image = R.drawable.gmail, // Replace with your facebook icon
+                        image = R.drawable.facebook, // Replace with your facebook icon
                         label = "Facebook"
                     )
                 }
