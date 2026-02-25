@@ -22,6 +22,19 @@ class UserViewModel(val repo: UserRepo) : ViewModel() {
         repo.login(email, password, callback)
     }
 
+    // In UserViewModel.kt
+    fun getUserData(uid: String, onResult: (UserModel?) -> Unit) {
+        // Explicitly naming types (Boolean, UserModel?, String?) fixes the inference error
+        repo.getUserData(uid) { success: Boolean, user: UserModel?, message: String? ->
+            if (success) {
+                onResult(user)
+            } else {
+                onResult(null)
+            }
+        }
+    }
+
+    // Ensure this matches your repo exactly to avoid "Conflicting overloads"
     fun register(email: String, password: String, callback: (Boolean, String, String) -> Unit) {
         repo.register(email, password, callback)
     }

@@ -142,4 +142,21 @@ class UserRepoImpl : UserRepo {
                 }
             }
     }
+
+    override fun getUserData(uid: String, callback: (Boolean, UserModel?, String?) -> Unit) {
+        val database = com.google.firebase.database.FirebaseDatabase.getInstance()
+        database.getReference("Users").child(uid)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val user = snapshot.getValue(UserModel::class.java)
+                if (user != null) {
+                    callback(true, user, "User data fetched")
+                } else {
+                    callback(false, null, "User not found")
+                }
+            }
+            .addOnFailureListener {
+                callback(false, null, it.message)
+            }
+    }
 }

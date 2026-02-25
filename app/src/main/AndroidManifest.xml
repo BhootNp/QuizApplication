@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizApplication">
         <activity
+            android:name=".AddQuizDialog"
+            android:exported="false"
+            android:label="@string/title_activity_add_quiz_dialog"
+            android:theme="@style/Theme.QuizApplication" />
+        <activity
             android:name=".view.DashboardActivity"
             android:exported="true"
             android:label="@string/title_activity_dashboard"

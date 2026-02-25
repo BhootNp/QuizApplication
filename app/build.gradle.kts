@@ -63,4 +63,9 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // This allows Compose to "observe" LiveData
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.0")
+
+    // This fixed the "unresolved reference compose" in Dashboard
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
 }
