@@ -1,5 +1,6 @@
 package com.example.quizapplication.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.quizapplication.model.UserModel
@@ -23,13 +24,17 @@ class UserViewModel(val repo: UserRepo) : ViewModel() {
     }
 
     // In UserViewModel.kt
-    fun getUserData(uid: String, onResult: (UserModel?) -> Unit) {
-        // Explicitly naming types (Boolean, UserModel?, String?) fixes the inference error
-        repo.getUserData(uid) { success: Boolean, user: UserModel?, message: String? ->
+    private val _userData = MutableLiveData<UserModel?>()
+    val userData: LiveData<UserModel?> = _userData
+
+    // 2. Updated function to accept an optional callback
+    fun getUserData(uid: String, onResult: ((UserModel?) -> Unit)? = null) {
+        repo.getUserData(uid) { success, user, _ ->
             if (success) {
-                onResult(user)
+                _userData.value = user // Updates LiveData for observers
+                onResult?.invoke(user) // Executes the lambda if provided
             } else {
-                onResult(null)
+                onResult?.invoke(null)
             }
         }
     }
@@ -63,8 +68,9 @@ class UserViewModel(val repo: UserRepo) : ViewModel() {
         return repo.getCurrentUser()
     }
 
-    fun deleteUser(userId: String, callback: (Boolean, String) -> Unit) {
-        repo.deleteUser(userId, callback)
+    // In UserViewModel.kt
+    fun deleteUser(userId: String, onComplete: (Boolean, String) -> Unit) {
+        repo.deleteUser(userId, onComplete)
     }
 
     fun updateProfile(userId: String, model: UserModel, callback: (Boolean, String) -> Unit) {
@@ -73,5 +79,28 @@ class UserViewModel(val repo: UserRepo) : ViewModel() {
 
     fun forgetPassword(email: String, callback: (Boolean, String) -> Unit) {
         repo.forgetPassword(email, callback)
+    }
+
+    fun signOut() {
+        repo.signOut()
+    }
+
+    // In UserViewModel.kt
+    fun incrementScore(userId: String) {
+        // Pass the userId and handle the 3-parameter callback from UserRepoImpl
+        repo.getUserData(userId) { success: Boolean, user: UserModel?, message: String? ->
+            if (success && user != null) {
+                val newScore = user.score + 10
+                val updatedUser = user.copy(score = newScore)
+
+                // Push update to Firebase
+                repo.updateProfile(userId, updatedUser) { isSuccessful, error ->
+                    if (isSuccessful) {
+                        // Refresh data to update UI
+                        getAllUser()
+                    }
+                }
+            }
+        }
     }
 }

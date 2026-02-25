@@ -120,11 +120,21 @@ class UserRepoImpl : UserRepo {
         model: UserModel,
         callback: (Boolean, String) -> Unit
     ) {
-        ref.child(userId).updateChildren(model.toMap()).addOnCompleteListener {
+        // Include all the fields you want to save
+        val updates = mapOf(
+            "firstName" to model.firstName,
+            "lastName" to model.lastName,
+            "gender" to model.gender,
+            "dob" to model.dob,
+            "score" to model.score,
+            "role" to model.role
+        )
+
+        ref.child(userId).updateChildren(updates).addOnCompleteListener {
             if (it.isSuccessful) {
-                callback(true, "Profile updated successfully")
+                callback(true, "Profile updated successfully!")
             } else {
-                callback(false, "${it.exception?.message}")
+                callback(false, it.exception?.message ?: "Database Error")
             }
         }
     }
@@ -158,5 +168,10 @@ class UserRepoImpl : UserRepo {
             .addOnFailureListener {
                 callback(false, null, it.message)
             }
+    }
+
+    // In UserRepoImpl.kt
+    override fun signOut() {
+        com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
     }
 }

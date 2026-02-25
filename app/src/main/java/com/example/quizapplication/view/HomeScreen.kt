@@ -1,90 +1,81 @@
 package com.example.quizapplication.view
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.quizapplication.model.QuizModel
+import com.example.quizapplication.ui.theme.NavyBlue
+import com.example.quizapplication.ui.theme.ProfessionalBlue
 import com.example.quizapplication.viewmodel.QuizViewModel
+import com.example.quizapplication.viewmodel.UserViewModel
 
 @Composable
-fun HomeScreen(viewModel: QuizViewModel, isAdmin: Boolean) { // 1. Added isAdmin parameter
-    val quizzes by viewModel.allQuizzes.observeAsState(initial = emptyList())
-    val isLoading by viewModel.loading.observeAsState(initial = false)
+fun HomeScreen(quizViewModel: QuizViewModel, userViewModel: UserViewModel, isAdmin: Boolean) {
+    val quizzes by quizViewModel.allQuizzes.observeAsState(initial = emptyList())
+    val isLoading by quizViewModel.loading.observeAsState(initial = false)
 
     var selectedQuizForPlay by remember { mutableStateOf<QuizModel?>(null) }
 
     LaunchedEffect(Unit) {
-        viewModel.getAllQuizzes()
+        quizViewModel.getAllQuizzes()
     }
 
-    selectedQuizForPlay?.let { quiz ->
+    if (selectedQuizForPlay != null) {
         QuizPlayDialog(
-            quiz = quiz,
+            quiz = selectedQuizForPlay!!,
+            userViewModel = userViewModel, // Pass this to update score
             onDismiss = { selectedQuizForPlay = null }
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 16.dp)) {
         Text(
-            text = "Explore Quizzes",
+            text = "Pick Your Challenge",
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            fontWeight = FontWeight.ExtraBold,
+            color = NavyBlue
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Test your knowledge and climb the ranks",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = ProfessionalBlue)
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 items(quizzes) { quiz ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { selectedQuizForPlay = quiz },
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        // 2. Used a Row to place Question and Delete button side-by-side
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(text = quiz.category, style = MaterialTheme.typography.labelLarge)
-                                Text(text = quiz.question, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-                                Text(text = "Difficulty: ${quiz.difficulty}", style = MaterialTheme.typography.bodySmall)
-                            }
-
-                            // 3. ADMIN ONLY: Delete Icon appears only for Admins
-                            if (isAdmin) {
-                                IconButton(onClick = {
-                                    // Add the curly braces at the end for the callback
-                                    viewModel.deleteQuiz(quiz.quizId) { success, message ->
-                                        // Optional: Show a toast or log the result
-                                    }
-                                }) {
-                                    Icon(
-                                        painter = painterResource(id = android.R.drawable.ic_menu_delete),
-                                        contentDescription = "Delete",
-                                        tint = Color.Red
-                                    )
-                                }
-                            }
+                    QuizCard(
+                        quiz = quiz,
+                        isAdmin = isAdmin,
+                        onClick = { selectedQuizForPlay = quiz },
+                        onDelete = {
+                            quizViewModel.deleteQuiz(quiz.quizId) { _, _ -> }
                         }
-                    }
+                    )
                 }
             }
         }
@@ -92,34 +83,102 @@ fun HomeScreen(viewModel: QuizViewModel, isAdmin: Boolean) { // 1. Added isAdmin
 }
 
 @Composable
-fun QuizPlayDialog(quiz: QuizModel, onDismiss: () -> Unit) {
+fun QuizCard(quiz: QuizModel, isAdmin: Boolean, onClick: () -> Unit, onDelete: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                // Category Chip
+                Surface(
+                    color = ProfessionalBlue.copy(alpha = 0.1f),
+                    shape = CircleShape
+                ) {
+                    Text(
+                        text = quiz.category.uppercase(),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = ProfessionalBlue,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = quiz.question,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 22.sp
+                )
+            }
+
+            if (isAdmin) {
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.background(Color(0xFFFFEBEE), CircleShape)
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun QuizPlayDialog(quiz: QuizModel, userViewModel: UserViewModel, onDismiss: () -> Unit) {
     var selectedOption by remember { mutableStateOf("") }
     var hasSubmitted by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "Question", fontWeight = FontWeight.Bold) },
+        shape = RoundedCornerShape(28.dp),
+        title = {
+            Text(text = "Quiz Challenge", fontWeight = FontWeight.ExtraBold, color = NavyBlue)
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(text = quiz.question, style = MaterialTheme.typography.titleMedium)
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text(
+                    text = quiz.question,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Medium
+                )
 
                 quiz.options.forEach { option ->
+                    val isSelected = selectedOption == option
                     Surface(
-                        shape = MaterialTheme.shapes.medium,
-                        color = if (selectedOption == option) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (isSelected) ProfessionalBlue.copy(alpha = 0.1f) else Color(0xFFF5F5F5),
                         modifier = Modifier
                             .fillMaxWidth()
+                            .then(
+                                if (isSelected) Modifier.border(2.dp, ProfessionalBlue, RoundedCornerShape(16.dp))
+                                else Modifier
+                            )
                             .clickable { if (!hasSubmitted) selectedOption = option }
-                    ) {
+                    ){
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(12.dp)
+                            modifier = Modifier.padding(16.dp)
                         ) {
                             RadioButton(
-                                selected = (selectedOption == option),
-                                onClick = { if (!hasSubmitted) selectedOption = option }
+                                selected = isSelected,
+                                onClick = { if (!hasSubmitted) selectedOption = option },
+                                colors = RadioButtonDefaults.colors(selectedColor = ProfessionalBlue)
                             )
-                            Text(text = option, modifier = Modifier.padding(start = 8.dp))
+                            Text(
+                                text = option,
+                                modifier = Modifier.padding(start = 12.dp),
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
                         }
                     }
                 }
@@ -127,16 +186,33 @@ fun QuizPlayDialog(quiz: QuizModel, onDismiss: () -> Unit) {
                 if (hasSubmitted) {
                     val isCorrect = selectedOption == quiz.correctAnswer
                     Text(
-                        text = if (isCorrect) "Correct! 🎉" else "Wrong! Correct: ${quiz.correctAnswer}",
+                        text = if (isCorrect) "BOOM! +10 Points 🎉" else "Not quite! Correct: ${quiz.correctAnswer}",
                         color = if (isCorrect) Color(0xFF4CAF50) else Color.Red,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall, // Make it big!
+                        fontWeight = FontWeight.ExtraBold
                     )
                 }
             }
         },
         confirmButton = {
-            Button(onClick = { if (!hasSubmitted) hasSubmitted = true else onDismiss() }) {
-                Text(if (!hasSubmitted) "Submit" else "Close")
+            Button(
+                onClick = {
+                    if (!hasSubmitted) {
+                        hasSubmitted = true
+                        // LOGIC: Update score if correct
+                        if (selectedOption == quiz.correctAnswer) {
+                            userViewModel.getCurrentUser()?.uid?.let { uid ->
+                                userViewModel.incrementScore(uid)
+                            }
+                        }
+                    } else {
+                        onDismiss()
+                    }
+                },
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = NavyBlue)
+            ) {
+                Text(if (!hasSubmitted) "Submit Answer" else "Finish")
             }
         }
     )

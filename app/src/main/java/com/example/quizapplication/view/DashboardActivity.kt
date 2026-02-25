@@ -125,11 +125,11 @@ fun DashboardBody() {
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding).background(LightBg)) {
             when (selectedIndex) {
-                // Pass isAdmin to HomeScreen so it can hide delete buttons
-                0 -> HomeScreen(quizViewModel, isAdmin)
+                // Corrected the order of parameters
+                0 -> HomeScreen(quizViewModel, userViewModel, isAdmin)
                 1 -> RankingScreen(userViewModel)
                 2 -> ProfileScreen(userViewModel)
-                else -> HomeScreen(quizViewModel, isAdmin)
+                else -> HomeScreen(quizViewModel, userViewModel, isAdmin)
             }
         }
     }

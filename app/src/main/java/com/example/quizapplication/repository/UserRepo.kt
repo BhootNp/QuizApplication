@@ -31,4 +31,7 @@ interface UserRepo {
                        callback: (Boolean, String) -> Unit)
 
     fun getUserData(uid: String, callback: (Boolean, UserModel?, String?) -> Unit)
+
+    // In UserViewModel.kt
+    fun signOut()
 }

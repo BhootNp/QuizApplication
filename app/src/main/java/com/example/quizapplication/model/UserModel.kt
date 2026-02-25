@@ -8,6 +8,7 @@ data class UserModel(
     val lastName: String  = "",
     val dob: String  = "",
     val gender: String  = "",
+    val score: Int = 0
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
@@ -16,7 +17,9 @@ data class UserModel(
             "firstName" to firstName,
             "lastName" to lastName,
             "dob" to dob,
-            "gender" to gender
+            "gender" to gender,
+            "role" to role,
+            "score" to score
         )
     }
 }
