@@ -233,7 +233,7 @@ fun ProfileScreen(viewModel: UserViewModel) {
                 ) {
                     ProfileStatCard(label = "Total XP", value = "${userData?.score ?: 0}")
                     VerticalDivider(modifier = Modifier.height(40.dp), thickness = 1.dp, color = Color(0xFFEEEEEE))
-                    ProfileStatCard(label = "Status", value = "Legend")
+                    ProfileStatCard(label = "Status", value = "Online")
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.quizapplication.model.QuizModel
@@ -186,7 +187,7 @@ fun QuizPlayDialog(quiz: QuizModel, userViewModel: UserViewModel, onDismiss: () 
                 if (hasSubmitted) {
                     val isCorrect = selectedOption == quiz.correctAnswer
                     Text(
-                        text = if (isCorrect) "BOOM! +10 Points 🎉" else "Not quite! Correct: ${quiz.correctAnswer}",
+                        text = if (isCorrect) "BOOM! +10 Points 🎉" else "Not quite right! Correct option is : ${quiz.correctAnswer}",
                         color = if (isCorrect) Color(0xFF4CAF50) else Color.Red,
                         style = MaterialTheme.typography.headlineSmall, // Make it big!
                         fontWeight = FontWeight.ExtraBold

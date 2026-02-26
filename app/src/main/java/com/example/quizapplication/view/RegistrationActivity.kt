@@ -253,7 +253,7 @@ fun RegisterBody() {
                                         Toast.makeText(context, message ?: "Registration Failed", Toast.LENGTH_LONG).show()
                                     }
                                 }
-                            } catch (e: Exception) {
+                            } catch (e : Exception) {
                                 isLoading = false
                                 Toast.makeText(context, "Error: Check Repo Implementation", Toast.LENGTH_LONG).show()
                             }
