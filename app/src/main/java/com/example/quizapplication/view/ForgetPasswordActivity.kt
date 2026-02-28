@@ -7,27 +7,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.quizapplication.R
 import com.example.quizapplication.repository.UserRepoImpl
 import com.example.quizapplication.ui.theme.LightBg
 import com.example.quizapplication.ui.theme.NavyBlue
@@ -46,7 +45,6 @@ class ForgetPasswordActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgetPasswordBody() {
     var email by remember { mutableStateOf("") }
@@ -62,17 +60,6 @@ fun ForgetPasswordBody() {
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = { Text("Reset Password", color = White, fontSize = 18.sp) },
-                navigationIcon = {
-                    IconButton(onClick = { activity.finish() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = NavyBlue)
-            )
-        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -80,37 +67,7 @@ fun ForgetPasswordBody() {
                 .padding(padding)
                 .background(LightBg)
         ) {
-            // Header Section with Gradient
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(NavyBlue, ProfessionalBlue)
-                        ),
-                        shape = RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_lock_24),
-                        contentDescription = null,
-                        tint = White,
-                        modifier = Modifier.size(48.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "Forgot Password?",
-                        style = TextStyle(
-                            fontSize = 24.sp,
-                            color = White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-            }
+            AuthHeader("Forgot Password?", "We'll help you reset it")
 
             Column(
                 modifier = Modifier
@@ -190,6 +147,19 @@ fun ForgetPasswordBody() {
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = buildAnnotatedString {
+                        append("Remember your password? ")
+                        withStyle(SpanStyle(color = ProfessionalBlue, fontWeight = FontWeight.Bold)) {
+                            append("Sign In")
+                        }
+                    },
+                    modifier = Modifier.clickable { activity.finish() },
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

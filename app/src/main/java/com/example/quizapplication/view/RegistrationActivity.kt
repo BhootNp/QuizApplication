@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -69,7 +68,7 @@ fun RegisterBody() {
     val activity = context as Activity
     val calendar = Calendar.getInstance()
 
-    // Ensure UserRepoImpl() actually implements the methods and doesn't just have TODO()
+    // Ensure UserRepoImpl() actually implements the methods and doesn\'t just have TODO()
     val userViewModel = remember { UserViewModel(UserRepoImpl()) }
 
     val year = calendar.get(Calendar.YEAR)
@@ -88,202 +87,192 @@ fun RegisterBody() {
                 .fillMaxSize()
                 .padding(padding)
                 .background(LightBg)
-                .padding(horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Text(
-                "Create Account",
-                style = TextStyle(
-                    fontSize = 28.sp,
-                    color = NavyBlue,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-
-            Text(
-                "Join NeuroQuiz Today",
-                style = TextStyle(fontSize = 14.sp, color = Color.Gray)
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            // First Name and Last Name Row
-            Row(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
-                    placeholder = { Text("First Name") },
-                    modifier = Modifier.weight(1f).padding(end = 4.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = White,
-                        focusedContainerColor = White,
-                        focusedIndicatorColor = ProfessionalBlue
-                    )
-                )
-                OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
-                    placeholder = { Text("Last Name") },
-                    modifier = Modifier.weight(1f).padding(start = 4.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = White,
-                        focusedContainerColor = White,
-                        focusedIndicatorColor = ProfessionalBlue
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                placeholder = { Text("Email Address") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = White,
-                    focusedContainerColor = White,
-                    focusedIndicatorColor = ProfessionalBlue
-                )
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Date of Birth Field
-            OutlinedTextField(
-                value = selectedDate,
-                onValueChange = {},
-                readOnly = true,
-                placeholder = { Text("Date of Birth (YYYY/MM/DD)") },
+            AuthHeader("Create Account", "Join NeuroQuiz Today")
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { datepicker.show() },
-                enabled = false,
-                shape = RoundedCornerShape(12.dp),
-                colors = TextFieldDefaults.colors(
-                    disabledContainerColor = White,
-                    disabledTextColor = Color.Black,
-                    disabledPlaceholderColor = Color.Gray,
-                    disabledIndicatorColor = Color.LightGray
-                )
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                placeholder = { Text("Password") },
-                trailingIcon = {
-                    IconButton(onClick = { visibility = !visibility }) {
-                        Icon(
-                            painter = if (visibility)
-                                painterResource(R.drawable.baseline_visibility_off_24)
-                            else
-                                painterResource(R.drawable.baseline_visibility_24),
-                            contentDescription = null
-                        )
-                    }
-                },
-                visualTransformation = if (!visibility) PasswordVisualTransformation() else VisualTransformation.None,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = White,
-                    focusedContainerColor = White,
-                    focusedIndicatorColor = ProfessionalBlue
-                )
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Checkbox(
-                    checked = terms,
-                    onCheckedChange = { terms = it },
-                    colors = CheckboxDefaults.colors(checkedColor = ProfessionalBlue)
+                Spacer(modifier = Modifier.height(30.dp))
+
+                // First Name and Last Name Row
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = firstName,
+                        onValueChange = { firstName = it },
+                        placeholder = { Text("First Name") },
+                        modifier = Modifier.weight(1f).padding(end = 4.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = White,
+                            focusedContainerColor = White,
+                            focusedIndicatorColor = ProfessionalBlue
+                        )
+                    )
+                    OutlinedTextField(
+                        value = lastName,
+                        onValueChange = { lastName = it },
+                        placeholder = { Text("Last Name") },
+                        modifier = Modifier.weight(1f).padding(start = 4.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = White,
+                            focusedContainerColor = White,
+                            focusedIndicatorColor = ProfessionalBlue
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    placeholder = { Text("Email Address") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = White,
+                        focusedContainerColor = White,
+                        focusedIndicatorColor = ProfessionalBlue
+                    )
                 )
-                Text("I agree to the Terms & Conditions", fontSize = 12.sp)
-            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            if (isLoading) {
-                CircularProgressIndicator(color = ProfessionalBlue)
-            } else {
-                Button(
-                    onClick = {
-                        if (!terms) {
-                            Toast.makeText(context, "Please agree to terms", Toast.LENGTH_SHORT).show()
-                        } else if (email.isEmpty() || password.isEmpty() || firstName.isEmpty()) {
-                            Toast.makeText(context, "Please fill required fields", Toast.LENGTH_SHORT).show()
-                        } else {
-                            isLoading = true
-                            // NOTE: If UserRepoImpl still has TODO(), this will crash the app.
-                            try {
-                                userViewModel.register(email, password) { success, message, userId ->
-                                    if (success) {
-                                        val model = UserModel(
-                                            userId = userId,
-                                            email = email,
-                                            firstName = firstName,
-                                            lastName = lastName,
-                                            dob = selectedDate,
-                                            gender = gender
-                                        )
-                                        userViewModel.addUserToDatabase(userId, model) { dbSuccess, dbMessage ->
-                                            isLoading = false
-                                            Toast.makeText(context, dbMessage, Toast.LENGTH_LONG).show()
-                                            if (dbSuccess) {
-                                                context.startActivity(Intent(context, LoginActivity::class.java))
-                                                activity.finish()
-                                            }
-                                        }
-                                    } else {
-                                        isLoading = false
-                                        Toast.makeText(context, message ?: "Registration Failed", Toast.LENGTH_LONG).show()
-                                    }
-                                }
-                            } catch (e : Exception) {
-                                isLoading = false
-                                Toast.makeText(context, "Error: Check Repo Implementation", Toast.LENGTH_LONG).show()
-                            }
-                        }
-                    },
+                // Date of Birth Field
+                OutlinedTextField(
+                    value = selectedDate,
+                    onValueChange = {},
+                    readOnly = true,
+                    placeholder = { Text("Date of Birth (YYYY/MM/DD)") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(55.dp),
+                        .clickable { datepicker.show() },
+                    enabled = false,
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = NavyBlue)
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = White,
+                        disabledTextColor = Color.Black,
+                        disabledPlaceholderColor = Color.Gray,
+                        disabledIndicatorColor = Color.LightGray
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    placeholder = { Text("Password") },
+                    trailingIcon = {
+                        IconButton(onClick = { visibility = !visibility }) {
+                            Icon(
+                                painter = if (visibility)
+                                    painterResource(R.drawable.baseline_visibility_off_24)
+                                else
+                                    painterResource(R.drawable.baseline_visibility_24),
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    visualTransformation = if (!visibility) PasswordVisualTransformation() else VisualTransformation.None,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = White,
+                        focusedContainerColor = White,
+                        focusedIndicatorColor = ProfessionalBlue
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Sign Up", color = White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Checkbox(
+                        checked = terms,
+                        onCheckedChange = { terms = it },
+                        colors = CheckboxDefaults.colors(checkedColor = ProfessionalBlue)
+                    )
+                    Text("I agree to the Terms & Conditions", fontSize = 12.sp)
                 }
-            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = buildAnnotatedString {
-                    append("Already have an account? ")
-                    withStyle(SpanStyle(color = ProfessionalBlue, fontWeight = FontWeight.Bold)) {
-                        append("Sign In")
+                if (isLoading) {
+                    CircularProgressIndicator(color = ProfessionalBlue)
+                } else {
+                    Button(
+                        onClick = {
+                            if (!terms) {
+                                Toast.makeText(context, "Please agree to terms", Toast.LENGTH_SHORT).show()
+                            } else if (email.isEmpty() || password.isEmpty() || firstName.isEmpty()) {
+                                Toast.makeText(context, "Please fill required fields", Toast.LENGTH_SHORT).show()
+                            } else {
+                                isLoading = true
+                                // NOTE: If UserRepoImpl still has TODO(), this will crash the app.
+                                try {
+                                    userViewModel.register(email, password) { success, message, userId ->
+                                        if (success) {
+                                            val model = UserModel(
+                                                userId = userId,
+                                                email = email,
+                                                firstName = firstName,
+                                                lastName = lastName,
+                                                dob = selectedDate,
+                                                gender = gender
+                                            )
+                                            userViewModel.addUserToDatabase(userId, model) { dbSuccess, dbMessage ->
+                                                isLoading = false
+                                                Toast.makeText(context, dbMessage, Toast.LENGTH_LONG).show()
+                                                if (dbSuccess) {
+                                                    context.startActivity(Intent(context, LoginActivity::class.java))
+                                                    activity.finish()
+                                                }
+                                            }
+                                        } else {
+                                            isLoading = false
+                                            Toast.makeText(context, message ?: "Registration Failed", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+                                } catch (e : Exception) {
+                                    isLoading = false
+                                    Toast.makeText(context, "Error: Check Repo Implementation", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = NavyBlue)
+                    ) {
+                        Text("Sign Up", color = White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
-                },
-                modifier = Modifier.clickable {
-                    context.startActivity(Intent(context, LoginActivity::class.java))
-                    activity.finish()
-                },
-                textAlign = TextAlign.Center
-            )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = buildAnnotatedString {
+                        append("Already have an account? ")
+                        withStyle(SpanStyle(color = ProfessionalBlue, fontWeight = FontWeight.Bold)) {
+                            append("Sign In")
+                        }
+                    },
+                    modifier = Modifier.clickable {
+                        context.startActivity(Intent(context, LoginActivity::class.java))
+                        activity.finish()
+                    },
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
