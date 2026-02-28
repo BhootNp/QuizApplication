@@ -36,9 +36,9 @@ class UserRepoImpl : UserRepo {
     ) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
             if (it.isSuccessful) {
-                callback(true, "Register Success", "${auth.currentUser?.uid}")
+                callback(true, "Register Success", auth.currentUser?.uid ?: "")
             } else {
-                callback(false, "${it.exception?.message}", "")
+                callback(false, it.exception?.message ?: "Registration failed", "")
             }
         }
     }
@@ -52,7 +52,7 @@ class UserRepoImpl : UserRepo {
             if (it.isSuccessful) {
                 callback(true, "Registered successfully")
             } else {
-                callback(false, "${it.exception?.message}")
+                callback(false, it.exception?.message ?: "Database Error")
             }
         }
     }
@@ -61,35 +61,38 @@ class UserRepoImpl : UserRepo {
         userId: String,
         callback: (Boolean, UserModel) -> Unit
     ) {
-        ref.child(userId).addValueEventListener(object : ValueEventListener {
+        ref.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val user = snapshot.getValue(UserModel::class.java)
                     if (user != null) {
                         callback(true, user)
+                    } else {
+                        callback(false, UserModel()) // User data is corrupt or null
                     }
+                } else {
+                    callback(false, UserModel()) // User not found
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                callback(false, UserModel())
+                callback(false, UserModel()) // Firebase error
             }
         })
     }
 
     override fun getAllUser(callback: (Boolean, List<UserModel>) -> Unit) {
-        ref.addValueEventListener(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                val allUsers = mutableListOf<UserModel>()
                 if (snapshot.exists()) {
-                    val allUsers = mutableListOf<UserModel>()
-                    for (user in snapshot.children) {
-                        val model = user.getValue(UserModel::class.java)
-                        if (model != null) {
-                            allUsers.add(model)
-                        }
+                    for (userSnapshot in snapshot.children) {
+                        val user = userSnapshot.getValue(UserModel::class.java)
+                        user?.let { allUsers.add(it) }
                     }
-                    callback(true, allUsers)
                 }
+                // Always return, even if the list is empty
+                callback(true, allUsers)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -110,7 +113,7 @@ class UserRepoImpl : UserRepo {
             if (it.isSuccessful) {
                 callback(true, "User deleted successfully")
             } else {
-                callback(false, "${it.exception?.message}")
+                callback(false, it.exception?.message ?: "Deletion failed")
             }
         }
     }
@@ -120,7 +123,6 @@ class UserRepoImpl : UserRepo {
         model: UserModel,
         callback: (Boolean, String) -> Unit
     ) {
-        // Include all the fields you want to save
         val updates = mapOf(
             "firstName" to model.firstName,
             "lastName" to model.lastName,
@@ -148,13 +150,12 @@ class UserRepoImpl : UserRepo {
                 if (it.isSuccessful) {
                     callback(true, "Email sent successfully")
                 } else {
-                    callback(false, "${it.exception?.message}")
+                    callback(false, it.exception?.message ?: "Failed to send email")
                 }
             }
     }
-
+    
     override fun getUserData(uid: String, callback: (Boolean, UserModel?, String?) -> Unit) {
-        val database = com.google.firebase.database.FirebaseDatabase.getInstance()
         database.getReference("Users").child(uid)
             .get()
             .addOnSuccessListener { snapshot ->
@@ -170,8 +171,7 @@ class UserRepoImpl : UserRepo {
             }
     }
 
-    // In UserRepoImpl.kt
     override fun signOut() {
-        com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+        auth.signOut()
     }
 }

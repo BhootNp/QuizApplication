@@ -10,11 +10,34 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +63,7 @@ import com.example.quizapplication.ui.theme.ProfessionalBlue
 import com.example.quizapplication.ui.theme.White
 import com.example.quizapplication.viewmodel.UserViewModel
 import java.util.Calendar
+
 class RegistrationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,18 +81,15 @@ fun RegisterBody() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var selectedDate by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("Male") } // Default to Male
     var visibility by remember { mutableStateOf(false) }
     var terms by remember { mutableStateOf(false) }
-
-    // Add a loading state to prevent multiple clicks and show progress
     var isLoading by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val activity = context as Activity
     val calendar = Calendar.getInstance()
 
-    // Ensure UserRepoImpl() actually implements the methods and doesn\'t just have TODO()
     val userViewModel = remember { UserViewModel(UserRepoImpl()) }
 
     val year = calendar.get(Calendar.YEAR)
@@ -88,7 +109,8 @@ fun RegisterBody() {
                 .padding(padding)
                 .background(LightBg)
         ) {
-            AuthHeader("Create Account", "Join NeuroQuiz Today")
+            AuthHeaderWithLogo()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -97,7 +119,6 @@ fun RegisterBody() {
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
 
-                // First Name and Last Name Row
                 Row(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = firstName,
@@ -143,7 +164,6 @@ fun RegisterBody() {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Date of Birth Field
                 OutlinedTextField(
                     value = selectedDate,
                     onValueChange = {},
@@ -161,6 +181,26 @@ fun RegisterBody() {
                         disabledIndicatorColor = Color.LightGray
                     )
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text("Gender:", fontWeight = FontWeight.Medium, color = NavyBlue)
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        RadioButton(
+                            selected = gender == "Male",
+                            onClick = { gender = "Male" },
+                            colors = RadioButtonDefaults.colors(selectedColor = ProfessionalBlue)
+                        )
+                        Text("Male")
+                        RadioButton(
+                            selected = gender == "Female",
+                            onClick = { gender = "Female" },
+                            colors = RadioButtonDefaults.colors(selectedColor = ProfessionalBlue)
+                        )
+                        Text("Female")
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -216,34 +256,28 @@ fun RegisterBody() {
                                 Toast.makeText(context, "Please fill required fields", Toast.LENGTH_SHORT).show()
                             } else {
                                 isLoading = true
-                                // NOTE: If UserRepoImpl still has TODO(), this will crash the app.
-                                try {
-                                    userViewModel.register(email, password) { success, message, userId ->
-                                        if (success) {
-                                            val model = UserModel(
-                                                userId = userId,
-                                                email = email,
-                                                firstName = firstName,
-                                                lastName = lastName,
-                                                dob = selectedDate,
-                                                gender = gender
-                                            )
-                                            userViewModel.addUserToDatabase(userId, model) { dbSuccess, dbMessage ->
-                                                isLoading = false
-                                                Toast.makeText(context, dbMessage, Toast.LENGTH_LONG).show()
-                                                if (dbSuccess) {
-                                                    context.startActivity(Intent(context, LoginActivity::class.java))
-                                                    activity.finish()
-                                                }
-                                            }
-                                        } else {
+                                userViewModel.register(email, password) { success, message, userId ->
+                                    if (success && userId.isNotEmpty()) {
+                                        val model = UserModel(
+                                            userId = userId,
+                                            email = email,
+                                            firstName = firstName,
+                                            lastName = lastName,
+                                            dob = selectedDate,
+                                            gender = gender
+                                        )
+                                        userViewModel.addUserToDatabase(userId, model) { dbSuccess, dbMessage ->
                                             isLoading = false
-                                            Toast.makeText(context, message ?: "Registration Failed", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(context, dbMessage, Toast.LENGTH_LONG).show()
+                                            if (dbSuccess) {
+                                                context.startActivity(Intent(context, LoginActivity::class.java))
+                                                activity.finish()
+                                            }
                                         }
+                                    } else {
+                                        isLoading = false
+                                        Toast.makeText(context, message ?: "Registration Failed", Toast.LENGTH_LONG).show()
                                     }
-                                } catch (e : Exception) {
-                                    isLoading = false
-                                    Toast.makeText(context, "Error: Check Repo Implementation", Toast.LENGTH_LONG).show()
                                 }
                             }
                         },

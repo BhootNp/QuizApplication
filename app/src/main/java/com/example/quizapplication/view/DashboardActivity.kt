@@ -1,30 +1,66 @@
 package com.example.quizapplication.view
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -57,7 +93,6 @@ fun DashboardBody() {
     val context = LocalContext.current
     val activity = context as Activity
 
-    // 1. Setup ViewModels
     val userRepo = UserRepoImpl()
     val quizRepo = QuizRepoImpl()
     val userViewModel: UserViewModel = viewModel(factory = ViewModelFactory(userRepo))
@@ -67,13 +102,16 @@ fun DashboardBody() {
     var selectedIndex by remember { mutableIntStateOf(0) }
     var showAddDialog by remember { mutableStateOf(false) }
 
-    // Fetch User Role on launch
     LaunchedEffect(Unit) {
         val currentUid = userViewModel.getCurrentUser()?.uid
         if (currentUid != null) {
             userViewModel.getUserData(currentUid) { user ->
                 isAdmin = user?.role == "admin"
             }
+        } else {
+            // If no user is logged in, redirect to LoginActivity
+            context.startActivity(Intent(context, LoginActivity::class.java))
+            activity.finish()
         }
     }
 
@@ -82,6 +120,7 @@ fun DashboardBody() {
     }
 
     data class NavItem(val label: String, val icon: Int)
+
     val listNav = listOf(
         NavItem("Home", R.drawable.baseline_home_24),
         NavItem("Leaderboards", R.drawable.baseline_leaderboard_24),
@@ -103,47 +142,36 @@ fun DashboardBody() {
             }
         },
         topBar = {
-            Column {
-                CenterAlignedTopAppBar(
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = NavyBlue,
-                        titleContentColor = White,
-                        actionIconContentColor = White,
-                        navigationIconContentColor = White
-                    ),
-                    title = {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("NEUROQUIZ",
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 2.sp,
-                                fontSize = 20.sp
-                            )
-                            Text("Elevate Your Mind",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Light,
-                                color = White.copy(alpha = 0.7f)
-                            )
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { activity.finish() }) {
-                            Icon(painterResource(R.drawable.baseline_arrow_back_24), "Back")
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            Toast.makeText(context, "No new notifications", Toast.LENGTH_SHORT).show()
-                        }) {
-                            Icon(painterResource(R.drawable.baseline_notifications_24), "Notifications")
-                        }
-                        IconButton(onClick = { /* Handle More Vert Menu */ }) {
-                            Icon(painterResource(R.drawable.baseline_more_vert_24), "More")
-                        }
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = NavyBlue,
+                    titleContentColor = White,
+                    actionIconContentColor = White
+                ),
+                title = {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = "NeuroQuiz Logo",
+                        modifier = Modifier.height(40.dp)
+                    )
+                },
+                actions = {
+                    IconButton(onClick = {
+                        Toast.makeText(context, "No new notifications", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Icon(painterResource(R.drawable.baseline_notifications_24), "Notifications")
                     }
-                )
-                // Subtle decorative accent line
-                Box(modifier = Modifier.fillMaxWidth().height(4.dp).background(ProfessionalBlue.copy(alpha = 0.4f)))
-            }
+                    IconButton(onClick = {
+                        userViewModel.signOut()
+                        Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(context, LoginActivity::class.java)
+                        context.startActivity(intent)
+                        activity.finish()
+                    }) {
+                        Icon(painterResource(R.drawable.baseline_logout_24), "Logout")
+                    }
+                }
+            )
         },
         bottomBar = {
             NavigationBar(
@@ -178,11 +206,19 @@ fun DashboardBody() {
             }
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).background(LightBg)) {
-            when (selectedIndex) {
-                0 -> HomeScreen(quizViewModel, userViewModel, isAdmin)
-                1 -> RankingScreen(userViewModel)
-                2 -> ProfileScreen(userViewModel)
+        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+            Image(
+                painter = painterResource(id = R.drawable.logo), // Your background pattern
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize().alpha(0.05f),
+                contentScale = ContentScale.Crop
+            )
+            Column(modifier = Modifier.fillMaxSize().background(LightBg.copy(alpha = 0.9f))) {
+                when (selectedIndex) {
+                    0 -> HomeScreen(quizViewModel, userViewModel, isAdmin)
+                    1 -> RankingScreen(userViewModel)
+                    2 -> ProfileScreen(userViewModel)
+                }
             }
         }
     }
