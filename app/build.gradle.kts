@@ -7,9 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.quizapplication"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.quizapplication"
@@ -56,13 +54,26 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.firebase.database)
-    testImplementation(libs.junit)
+    
+    // Unit Testing
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    
+    // Instrumented Testing (Android Device)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation("org.mockito:mockito-android:5.11.0")
+    androidTestImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    
     implementation("androidx.compose.runtime:runtime-livedata:1.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation("com.cloudinary:cloudinary-android:2.1.0")
